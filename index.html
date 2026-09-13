@@ -571,6 +571,37 @@ button:active{transform:translateY(0)}
   margin-bottom:10px;
 }
 
+/* ---------- SECRET EXPLORER NAME ---------- */
+.secret-name{
+  max-width:620px;
+  margin:28px auto 0;
+  padding:18px 20px 6px;
+  border:1px solid rgba(184,241,255,.16);
+  background:rgba(184,241,255,.025);
+  text-align:left;
+}
+
+.secret-label{
+  font-family:"Space Mono",monospace;
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--accent2);
+  margin-bottom:7px;
+}
+
+.secret-name p.small{
+  margin:0 0 12px;
+}
+
+.secret-name input{
+  margin:0;
+}
+
+.secret-name .feedback{
+  min-height:24px;
+  margin-top:8px;
+}
+
 /* ---------- MISSION LOG ---------- */
 
 .log{
@@ -606,6 +637,13 @@ button:active{transform:translateY(0)}
 }
 
 /* ---------- MOBILE ---------- */
+
+/* V4.3 — pantalla final completa y misión real siempre visible */
+#screen8{
+  align-items:flex-start;
+  padding-top:18px;
+  padding-bottom:30px;
+}
 
 @media(max-width:650px){
   #app{padding:15px 10px 35px}
@@ -1558,7 +1596,14 @@ button:active{transform:translateY(0)}
         <strong>FEDE: RECURSO AUTORIZADO.</strong>
       </p>
 
-      <button class="primary" type="button" onclick="goTo(8)">
+      <div class="secret-name">
+        <div class="secret-label">IDENTIFICACIÓN FINAL / NOMBRE SECRETO</div>
+        <p class="small">Elegí el nombre con el que querés ser identificado como explorador.</p>
+        <input id="secretNameInput" type="text" maxlength="30" autocomplete="off" spellcheck="false" placeholder="EJ. COMETA-7">
+        <div class="feedback error" id="secretNameFeedback"></div>
+      </div>
+
+      <button class="primary" id="finalizeButton" type="button" onclick="finalizeMission()">
         [ FINALIZAR MISIÓN ]
       </button>
     </div>
@@ -1807,11 +1852,72 @@ function analyzeFootprint(){
 
 function unlock(){
   goTo(7);
+}
 
-  /*
-    MÁS ADELANTE CONECTAMOS ACÁ EL AVISO SECRETO PARA EDU.
-    Fede nunca verá el monto ni la plataforma.
-  */
+/* ---------- TRANSMISIÓN SECRETA ---------- */
+
+const FORM_ENDPOINT = "https://formspree.io/f/xkjnlrzv";
+
+async function sendCompletionNotification(secretName){
+  const data = new FormData();
+  data.append("_subject", "🛰️ TRANSMISIÓN RECIBIDA — EXPEDICIÓN 001");
+  data.append("explorador", "FEDE");
+  data.append("nombre_secreto", secretName);
+  data.append("expedicion", "EXP-001 / PROTOCOLO ORIGEN");
+  data.append("estado", "MISIÓN COMPLETADA");
+  data.append("acceso", "AUTORIZADO");
+  data.append("registro", "RECURSO DE AVENTURA DESBLOQUEADO");
+  data.append("hora", new Date().toLocaleString("es-AR", {
+    dateStyle: "short",
+    timeStyle: "medium"
+  }));
+
+  try{
+    const response = await fetch(FORM_ENDPOINT, {
+      method: "POST",
+      body: data,
+      headers: { "Accept": "application/json" }
+    });
+
+    if(response.ok){
+      return true;
+    }
+
+    console.warn("No se pudo transmitir el registro a Formspree.");
+    return false;
+  }catch(error){
+    console.warn("Error de transmisión:", error);
+    return false;
+  }
+}
+
+async function finalizeMission(){
+  const input = document.getElementById("secretNameInput");
+  const feedback = document.getElementById("secretNameFeedback");
+  const button = document.getElementById("finalizeButton");
+  const secretName = input ? input.value.trim() : "";
+
+  if(!secretName){
+    feedback.textContent = "✕ ANTES DE FINALIZAR, ELEGÍ TU NOMBRE SECRETO DE EXPLORADOR.";
+    input.focus();
+    return;
+  }
+
+  if(secretName.length < 2){
+    feedback.textContent = "✕ EL NOMBRE DEBE TENER AL MENOS 2 CARACTERES.";
+    input.focus();
+    return;
+  }
+
+  if(button) {
+    button.disabled = true;
+    button.textContent = "[ TRANSMITIENDO... ]";
+  }
+  if(feedback) feedback.textContent = "";
+
+  // La pantalla final aparece normalmente; la transmisión ocurre en segundo plano.
+  goTo(8);
+  await sendCompletionNotification(secretName);
 }
 
 /* ---------- START ---------- */
