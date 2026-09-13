@@ -1441,6 +1441,9 @@ button:active{transform:translateY(0)}
         <button type="button" onclick="checkOrigin()">[ CONFIRMAR ]</button>
       </div>
       <div id="originFeedback" class="feedback"></div>
+      <div id="originHint" class="curiosity-hint">
+        PISTA: no es un país, una ciudad ni un lugar lejano. Es el mundo sobre el que estás parado.
+      </div>
     </div>
   </section>
 
@@ -1675,6 +1678,9 @@ button:active{transform:translateY(0)}
 </main>
 
 <script>
+/* V4.4 — PISTAS EN RESPUESTAS ESCRITAS / ORIGEN + CURIOSIDAD
+   ========================================================= */
+
 /* =========================================================
    EXPEDICIÓN 001 — CONTROL CENTRAL
    Todo funciona dentro de este único archivo.
@@ -1717,9 +1723,12 @@ function goTo(number){
 function checkOrigin(){
   const input = document.getElementById("originInput");
   const feedback = document.getElementById("originFeedback");
+  const hint = document.getElementById("originHint");
   const answer = input.value.trim().toLowerCase();
+  const normalized = answer.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  if(answer === "tierra" || answer === "la tierra"){
+  if(normalized === "tierra" || normalized === "la tierra" || normalized === "planeta tierra" || normalized === "el planeta tierra" || normalized === "nuestro planeta" || normalized === "earth"){
+    if(hint) hint.classList.remove("visible");
     feedback.className = "feedback success";
     feedback.innerHTML =
       "✓ COORDENADA CONFIRMADA<br>" +
@@ -1731,8 +1740,14 @@ function checkOrigin(){
     feedback.className = "feedback error";
     feedback.innerHTML =
       "SEÑAL INSUFICIENTE / VOLVÉ A OBSERVAR LA PISTA.";
+    if(hint) hint.classList.add("visible");
   }
 }
+
+document.getElementById("originInput").addEventListener("input",()=>{
+  const hint = document.getElementById("originHint");
+  if(hint) hint.classList.remove("visible");
+});
 
 document.getElementById("originInput").addEventListener("keydown",e=>{
   if(e.key === "Enter") checkOrigin();
@@ -1788,8 +1803,9 @@ function checkCuriosity(){
   const feedback = document.getElementById("curiosityFeedback");
   const hint = document.getElementById("curiosityHint");
   const answer = input.value.trim().toLowerCase();
+  const normalized = answer.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-  if(answer.includes("curiosidad")){
+  if(normalized.includes("curiosidad")){
     if(hint) hint.classList.remove("visible");
     feedback.className = "feedback success";
     feedback.innerHTML =
