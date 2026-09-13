@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expedición 001 — Protocolo Origen</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #05070a;
+    color: #e8edf2;
+    font-family: "Courier New", monospace;
+}
+
+body {
+    overflow: hidden;
+}
+
+#app {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.screen {
+    width: min(900px, 90%);
+    min-height: 70vh;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.logo {
+    font-size: 12px;
+    letter-spacing: 4px;
+    opacity: .55;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: clamp(30px, 6vw, 64px);
+    font-weight: normal;
+    letter-spacing: 6px;
+    margin: 0 0 20px;
+}
+
+h2 {
+    font-size: clamp(20px, 4vw, 36px);
+    font-weight: normal;
+    letter-spacing: 3px;
+    margin: 0 0 30px;
+}
+
+p {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 680px;
+    color: #c9d0d7;
+}
+
+.system {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #9da7b0;
+    margin: 10px 0;
+}
+
+button {
+    margin-top: 35px;
+    padding: 15px 24px;
+    background: transparent;
+    border: 1px solid #87929c;
+    color: #e8edf2;
+    font-family: "Courier New", monospace;
+    letter-spacing: 2px;
+    cursor: pointer;
+    width: fit-content;
+    transition: .2s;
+}
+
+button:hover {
+    background: #e8edf2;
+    color: #05070a;
+}
+
+input {
+    margin-top: 30px;
+    width: min(500px, 100%);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #87929c;
+    padding: 12px 5px;
+    color: white;
+    font-family: "Courier New", monospace;
+    font-size: 22px;
+    outline: none;
+    text-transform: uppercase;
+}
+
+.feedback {
+    margin-top: 25px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    min-height: 25px;
+}
+
+.stars {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: .5;
+}
+
+.signal {
+    font-size: 32px;
+    letter-spacing: 10px;
+    margin-bottom: 40px;
+}
+
+.radar {
+    width: 100%;
+    height: 1px;
+    background: #68737c;
+    position: relative;
+    margin: 30px 0;
+}
+
+.radar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 15%;
+    height: 5px;
+    background: white;
+    animation: scan 2s infinite;
+}
+
+@keyframes scan {
+    from { left: 0; }
+    to { left: 85%; }
+}
+
+.option {
+    display: block;
+    width: min(500px, 100%);
+    margin: 12px 0;
+    text-align: left;
+}
+
+.observation-field {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    margin-top: 30px;
+    border: 1px solid #222a30;
+    background: radial-gradient(circle, #101820 0%, #05070a 65%);
+}
+
+.target-star {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255,255,255,.7);
+}
+
+.target-star:nth-child(1) {
+    left: 18%;
+    top: 35%;
+}
+
+.target-star:nth-child(2) {
+    left: 55%;
+    top: 25%;
+}
+
+.target-star:nth-child(3) {
+    left: 72%;
+    top: 62%;
+}
+
+.target-star:nth-child(4) {
+    left: 37%;
+    top: 70%;
+}
+
+.target-star.special {
+    animation: blink 1.8s infinite;
+}
+
+@keyframes blink {
+    0%, 70%, 100% { opacity: .7; }
+    75%, 82% { opacity: 1; transform: scale(1.7); }
+}
+
+.success {
+    font-size: 15px;
+    letter-spacing: 3px;
+    line-height: 2;
+}
+
+.constellation {
+    font-size: 55px;
+    letter-spacing: 20px;
+    margin: 30px 0;
+    animation: constellation 3s ease forwards;
+}
+
+@keyframes constellation {
+    from { opacity: 0; transform: scale(.7); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.progress {
+    width: min(600px, 100%);
+    height: 8px;
+    border: 1px solid #69737b;
+    margin: 30px 0;
+}
+
+.progress-inner {
+    height: 100%;
+    width: 0;
+    background: white;
+    animation: load 3s forwards;
+}
+
+@keyframes load {
+    to { width: 100%; }
+}
+
+.final {
+    border-left: 1px solid #7d8790;
+    padding-left: 25px;
+    margin-top: 30px;
+}
+
+.blink {
+    animation: cursorBlink 1s infinite;
+}
+
+@keyframes cursorBlink {
+    50% { opacity: 0; }
+}
+
+@media(max-width:600px) {
+    .screen {
+        min-height: 80vh;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    h1 {
+        letter-spacing: 3px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+<div class="stars" id="stars"></div>
+
+<!-- 00 -->
+<section class="screen active" id="screen0">
+    <div class="logo">INTERGALACTIC EXPLORATION NETWORK</div>
+    <div class="signal">··· — — ···</div>
+
+    <div class="system">[ BUSCANDO SEÑAL<span class="blink">_</span> ]</div>
+    <div class="radar"></div>
+
+    <div class="system">SEÑAL LOCALIZADA</div>
+    <div class="system">ORIGEN: DESCONOCIDO</div>
+    <div class="system">PROTOCOLO: 001</div>
+    <div class="system">ESTADO: ACTIVO</div>
+
+    <button onclick="goTo(1)">[ RECIBIR TRANSMISIÓN ]</button>
+</section>
+
+
+<!-- 01 -->
+<section class="screen" id="screen1">
+    <div class="logo">TRANSMISIÓN ENTRANTE</div>
+    <h2>TRANSMISIÓN RECIBIDA</h2>
+
+    <p>
+        Si estás viendo este mensaje, significa que un nuevo explorador
+        ha sido detectado.
+    </p>
+
+    <p>
+        Antes de autorizar el acceso a los recursos de esta expedición,
+        debemos comprobar una cosa:
+    </p>
+
+    <p><strong>¿Sabés observar?</strong></p>
+
+    <p>No respondas rápido.<br>Observá.</p>
+
+    <button onclick="goTo(2)">[ INICIAR PROTOCOLO ]</button>
+</section>
+
+
+<!-- 02 -->
+<section class="screen" id="screen2">
+    <div class="logo">COORDENADA 01 / ORIGEN</div>
+    <h2>ORIGEN</h2>
+
+    <p>
+        Toda expedición comienza en algún lugar.
+        Un explorador puede viajar muy lejos,
+        pero siempre existe un punto desde el cual comienza a mirar.
+    </p>
+
+    <p>
+        No está en otro planeta.<br>
+        No está en una nave.<br>
+        <strong>Está debajo de tus pies.</strong>
+    </p>
+
+    <p>¿Cuál es tu coordenada de origen?</p>
+
+    <input id="originInput" placeholder="ESCRIBÍ TU RESPUESTA">
+
+    <button onclick="checkOrigin()">[ CONFIRMAR COORDENADA ]</button>
+
+    <div class="feedback" id="originFeedback"></div>
+</section>
+
+
+<!-- 03 -->
+<section class="screen" id="screen3">
+    <div class="logo">COORDENADA 02 / OBSERVACIÓN</div>
+    <h2>OBSERVACIÓN</h2>
+
+    <p>
+        Hay objetos que están demasiado lejos para verlos claramente.
+        Por eso existen instrumentos que nos permiten acercarlos.
+    </p>
+
+    <p>
+        Pero ningún instrumento puede hacer algo por sí solo.
+        Para descubrir algo nuevo primero hay que...
+    </p>
+
+    <button class="option" onclick="observationAnswer(false)">A — MIRAR</button>
+    <button class="option" onclick="observationAnswer(false)">B — SABER</button>
+    <button class="option" onclick="observationAnswer(false)">C — VIAJAR</button>
+
+    <div class="feedback" id="observationFeedback"></div>
+</section>
+
+
+<!-- 04 -->
+<section class="screen" id="screen4">
+    <div class="logo">SENSOR ACTIVO</div>
+    <h2>PRUEBA DE OBSERVACIÓN</h2>
+
+    <p>
+        Hay cuatro señales en el campo.
+        Una de ellas está cambiando.
+    </p>
+
+    <p><strong>Detectá la estrella que cambió.</strong></p>
+
+    <div class="observation-field">
+        <div class="target-star"></div>
+        <div class="target-star special" onclick="targetFound()"></div>
+        <div class="target-star"></div>
+        <div class="target-star"></div>
+    </div>
+
+    <div class="feedback" id="targetFeedback"></div>
+</section>
+
+
+<!-- 05 -->
+<section class="screen" id="screen5">
+    <div class="logo">COORDENADA 03 / VARIABLE DESCONOCIDA</div>
+    <h2>CURIOSIDAD</h2>
+
+    <p>
+        Los mapas sirven para encontrar lugares conocidos.
+        Los instrumentos sirven para observar.
+    </p>
+
+    <p>
+        Pero las grandes expediciones existen por una razón:
+        encontrar aquello que todavía no conocemos.
+    </p>
+
+    <p>
+        Hay una herramienta que todo explorador lleva consigo.
+        No pesa. No ocupa espacio. No necesita baterías.
+        Y cuanto más la utiliza, más crece.
+    </p>
+
+    <p><strong>¿Qué es?</strong></p>
+
+    <input id="curiosityInput" placeholder="ESCRIBÍ TU RESPUESTA">
+
+    <button onclick="checkCuriosity()">[ IDENTIFICAR VARIABLE ]</button>
+
+    <div class="feedback" id="curiosityFeedback"></div>
+</section>
+
+
+<!-- 06 -->
+<section class="screen" id="screen6">
+    <div class="logo">VARIABLE IDENTIFICADA</div>
+
+    <div class="constellation">✦ · ✦ · ✦</div>
+
+    <h2>CURIOSIDAD</h2>
+
+    <div class="success">
+        ✓ OBSERVACIÓN<br>
+        ✓ ORIGEN<br>
+        ✓ CURIOSIDAD
+    </div>
+
+    <p>
+        PROTOCOLO DE EXPLORACIÓN COMPLETADO
+    </p>
+
+    <p><strong>UNA ÚLTIMA PREGUNTA</strong></p>
+
+    <p>¿Estás preparado para continuar?</p>
+
+    <button onclick="unlock()">[ SÍ ]</button>
+</section>
+
+
+<!-- 07 -->
+<section class="screen" id="screen7">
+    <div class="logo">ACCESSING...</div>
+
+    <div class="progress">
+        <div class="progress-inner"></div>
+    </div>
+
+    <h2>ACCESO AUTORIZADO</h2>
+
+    <div class="system">EXPLORADOR CONFIRMADO</div>
+    <div class="system">EXPEDICIÓN 001</div>
+    <div class="system">PROTOCOLO ORIGEN</div>
+
+    <br>
+
+    <h2>🔓 RECURSO DE AVENTURA DESBLOQUEADO</h2>
+
+    <p>
+        Algunos recursos no se entregan inmediatamente.
+        Algunos esperan al momento adecuado.
+    </p>
+
+    <p>
+        Este ha sido reservado para una futura expedición.
+        Su ubicación y naturaleza permanecen clasificadas.
+    </p>
+
+    <button onclick="goTo(8)">[ VER REGISTRO DE MISIÓN ]</button>
+</section>
+
+
+<!-- 08 -->
+<section class="screen" id="screen8">
+    <div class="logo">REGISTRO DE MISIÓN</div>
+
+    <h2>MISIÓN COMPLETADA</h2>
+
+    <div class="final">
+        <div class="system">IDENTIDAD: CONFIRMADA</div>
+        <div class="system">ORIGEN: TIERRA</div>
+        <div class="system">OBSERVACIÓN: APROBADA</div>
+        <div class="system">CURIOSIDAD: CONFIRMADA</div>
+        <div class="system">ACCESO: AUTORIZADO</div>
+        <div class="system">RECURSO: DESBLOQUEADO</div>
+    </div>
+
+    <p>
+        La exploración continúa.
+    </p>
+
+    <p>
+        Mirá hacia arriba.<br>
+        Mirá alrededor.<br>
+        Hacé preguntas.<br>
+        Seguí el misterio.
+    </p>
+
+    <p>
+        Nunca se sabe qué mundo puede estar esperando
+        ser descubierto.
+    </p>
+
+    <div class="system">🔭 TRANSMISIÓN FINALIZADA</div>
+</section>
+
+</div>
+
+
+<script>
+
+/* ESTRELLAS */
+const stars = document.getElementById("stars");
+
+for (let i = 0; i < 100; i++) {
+    const star = document.createElement("div");
+    star.className = "star";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.opacity = Math.random();
+    stars.appendChild(star);
+}
+
+
+/* CAMBIO DE PANTALLA */
+function goTo(number) {
+
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
+
+    document.getElementById("screen" + number).classList.add("active");
+}
+
+
+/* COORDENADA ORIGEN */
+function checkOrigin() {
+
+    const answer = document
+        .getElementById("originInput")
+        .value
+        .trim()
+        .toUpperCase();
+
+    const feedback = document.getElementById("originFeedback");
+
+    if (
+        answer === "TIERRA" ||
+        answer === "LA TIERRA"
+    ) {
+
+        feedback.innerHTML =
+            "✓ COORDENADA CONFIRMADA<br><br>" +
+            "ORIGEN: TIERRA<br>" +
+            "TODO EXPLORADOR DEBE SABER DESDE DÓNDE OBSERVA.";
+
+        setTimeout(() => goTo(3), 2200);
+
+    } else {
+
+        feedback.innerHTML =
+            "SEÑAL INSUFICIENTE<br>" +
+            "VOLVÉ A OBSERVAR LA PISTA.";
+    }
+}
+
+
+/* OBSERVACIÓN */
+function observationAnswer(correct) {
+
+    const feedback =
+        document.getElementById("observationFeedback");
+
+    feedback.innerHTML =
+        "✓ RESPUESTA ACEPTADA<br><br>" +
+        "Pero mirar no siempre significa ver.<br>" +
+        "La observación requiere atención.";
+
+    setTimeout(() => goTo(4), 2200);
+}
+
+
+/* ESTRELLA */
+function targetFound() {
+
+    const feedback =
+        document.getElementById("targetFeedback");
+
+    feedback.innerHTML =
+        "✓ OBJETIVO DETECTADO<br><br>" +
+        "CAPACIDAD DE OBSERVACIÓN: CONFIRMADA";
+
+    setTimeout(() => goTo(5), 2200);
+}
+
+
+/* CURIOSIDAD */
+function checkCuriosity() {
+
+    const answer = document
+        .getElementById("curiosityInput")
+        .value
+        .trim()
+        .toUpperCase();
+
+    const feedback =
+        document.getElementById("curiosityFeedback");
+
+    if (
+        answer === "CURIOSIDAD" ||
+        answer === "LA CURIOSIDAD"
+    ) {
+
+        feedback.innerHTML =
+            "✓ VARIABLE IDENTIFICADA";
+
+        setTimeout(() => goTo(6), 1800);
+
+    } else {
+
+        feedback.innerHTML =
+            "VARIABLE NO IDENTIFICADA<br>" +
+            "SEGUÍ INVESTIGANDO.";
+    }
+}
+
+
+/* DESBLOQUEO */
+function unlock() {
+
+    goTo(7);
+
+    /*
+       MÁS ADELANTE VAMOS A CONECTAR ACÁ
+       EL AVISO SECRETO PARA EDU.
+    */
+}
+
+</script>
+
+</body>
+</html>
