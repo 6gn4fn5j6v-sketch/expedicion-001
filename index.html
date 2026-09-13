@@ -84,6 +84,23 @@ p {
     margin: 10px 0;
 }
 
+.highlight {
+    color: #ffffff;
+    letter-spacing: 3px;
+}
+
+.personal {
+    font-size: clamp(24px, 5vw, 46px);
+    letter-spacing: 8px;
+    margin: 8px 0 18px;
+}
+
+.profile-box {
+    border-left: 1px solid #69737b;
+    padding-left: 22px;
+    margin: 15px 0 20px;
+}
+
 button {
     margin-top: 35px;
     padding: 15px 24px;
@@ -220,8 +237,14 @@ input {
 }
 
 @keyframes blink {
-    0%, 70%, 100% { opacity: .7; }
-    75%, 82% { opacity: 1; transform: scale(1.7); }
+    0%, 70%, 100% {
+        opacity: .7;
+    }
+
+    75%, 82% {
+        opacity: 1;
+        transform: scale(1.7);
+    }
 }
 
 .success {
@@ -238,8 +261,15 @@ input {
 }
 
 @keyframes constellation {
-    from { opacity: 0; transform: scale(.7); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(.7);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .progress {
@@ -257,7 +287,9 @@ input {
 }
 
 @keyframes load {
-    to { width: 100%; }
+    to {
+        width: 100%;
+    }
 }
 
 .final {
@@ -266,15 +298,29 @@ input {
     margin-top: 30px;
 }
 
+.easter {
+    opacity: .72;
+    font-size: 14px;
+    border-top: 1px solid #20282e;
+    border-bottom: 1px solid #20282e;
+    padding: 15px 0;
+    margin: 25px 0;
+    max-width: 680px;
+    line-height: 1.7;
+}
+
 .blink {
     animation: cursorBlink 1s infinite;
 }
 
 @keyframes cursorBlink {
-    50% { opacity: 0; }
+    50% {
+        opacity: 0;
+    }
 }
 
 @media(max-width:600px) {
+
     .screen {
         min-height: 80vh;
     }
@@ -286,6 +332,10 @@ input {
     h1 {
         letter-spacing: 3px;
     }
+
+    .personal {
+        letter-spacing: 5px;
+    }
 }
 </style>
 </head>
@@ -296,50 +346,142 @@ input {
 
 <div class="stars" id="stars"></div>
 
-<!-- 00 -->
-<section class="screen active" id="screen0">
-    <div class="logo">INTERGALACTIC EXPLORATION NETWORK</div>
-    <div class="signal">··· — — ···</div>
 
-    <div class="system">[ BUSCANDO SEÑAL<span class="blink">_</span> ]</div>
+<!-- ================================================= -->
+<!-- 00 — SEÑAL -->
+<!-- ================================================= -->
+
+<section class="screen active" id="screen0">
+
+    <div class="logo">
+        INTERGALACTIC EXPLORATION NETWORK
+    </div>
+
+    <div class="signal">
+        ··· — — ···
+    </div>
+
+    <div class="system">
+        [ BUSCANDO SEÑAL<span class="blink">_</span> ]
+    </div>
+
     <div class="radar"></div>
 
-    <div class="system">SEÑAL LOCALIZADA</div>
-    <div class="system">ORIGEN: DESCONOCIDO</div>
-    <div class="system">PROTOCOLO: 001</div>
-    <div class="system">ESTADO: ACTIVO</div>
+    <div class="system">
+        SEÑAL LOCALIZADA
+    </div>
 
-    <button onclick="goTo(1)">[ RECIBIR TRANSMISIÓN ]</button>
+    <div class="system">
+        ORIGEN: DESCONOCIDO
+    </div>
+
+    <div class="system">
+        PROTOCOLO: 001
+    </div>
+
+    <div class="system">
+        ESTADO: ACTIVO
+    </div>
+
+    <button onclick="goTo(1)">
+        [ RECIBIR TRANSMISIÓN ]
+    </button>
+
 </section>
 
 
-<!-- 01 -->
+<!-- ================================================= -->
+<!-- 01 — IDENTIFICACIÓN DE FEDE -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen1">
-    <div class="logo">TRANSMISIÓN ENTRANTE</div>
-    <h2>TRANSMISIÓN RECIBIDA</h2>
+
+    <div class="logo">
+        TRANSMISIÓN ENTRANTE / IDENTIFICACIÓN
+    </div>
+
+    <h2>
+        TRANSMISIÓN RECIBIDA
+    </h2>
 
     <p>
-        Si estás viendo este mensaje, significa que un nuevo explorador
-        ha sido detectado.
+        Si estás viendo este mensaje, significa que una señal
+        ha sido localizada y que un posible explorador ha sido detectado.
+    </p>
+
+    <div class="profile-box">
+
+        <div class="system">
+            IDENTIFICACIÓN:
+        </div>
+
+        <div class="personal">
+            FEDE
+        </div>
+
+        <div class="system">
+            EDAD REGISTRADA: 12 AÑOS
+        </div>
+
+        <div class="system">
+            ESTADO: NUEVO CICLO INICIADO
+        </div>
+
+    </div>
+
+    <p>
+        El sistema ha analizado algunos parámetros del perfil.
+    </p>
+
+    <div class="system">
+        PRECISIÓN: ELEVADA
+    </div>
+
+    <div class="system">
+        CAPACIDAD DE OBSERVACIÓN: PENDIENTE
+    </div>
+
+    <div class="system">
+        CURIOSIDAD: NO CUANTIFICABLE
+    </div>
+
+    <p>
+        A los 12 años, un explorador ya debería haber aprendido
+        algo importante:
+        <strong>
+        no aceptar una respuesta solamente porque alguien dice que es correcta.
+        </strong>
     </p>
 
     <p>
-        Antes de autorizar el acceso a los recursos de esta expedición,
-        debemos comprobar una cosa:
+        <strong>¿Sabés observar?</strong>
     </p>
 
-    <p><strong>¿Sabés observar?</strong></p>
+    <p>
+        No respondas rápido.<br>
+        Observá.
+    </p>
 
-    <p>No respondas rápido.<br>Observá.</p>
+    <button onclick="goTo(2)">
+        [ INICIAR PROTOCOLO ]
+    </button>
 
-    <button onclick="goTo(2)">[ INICIAR PROTOCOLO ]</button>
 </section>
 
 
-<!-- 02 -->
+<!-- ================================================= -->
+<!-- 02 — ORIGEN -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen2">
-    <div class="logo">COORDENADA 01 / ORIGEN</div>
-    <h2>ORIGEN</h2>
+
+    <div class="logo">
+        COORDENADA 01 / ORIGEN
+    </div>
+
+    <h2>
+        ORIGEN
+    </h2>
 
     <p>
         Toda expedición comienza en algún lugar.
@@ -353,20 +495,40 @@ input {
         <strong>Está debajo de tus pies.</strong>
     </p>
 
-    <p>¿Cuál es tu coordenada de origen?</p>
+    <p>
+        ¿Cuál es tu coordenada de origen?
+    </p>
 
-    <input id="originInput" placeholder="ESCRIBÍ TU RESPUESTA">
+    <input
+        id="originInput"
+        placeholder="ESCRIBÍ TU RESPUESTA"
+    >
 
-    <button onclick="checkOrigin()">[ CONFIRMAR COORDENADA ]</button>
+    <button onclick="checkOrigin()">
+        [ CONFIRMAR COORDENADA ]
+    </button>
 
-    <div class="feedback" id="originFeedback"></div>
+    <div
+        class="feedback"
+        id="originFeedback">
+    </div>
+
 </section>
 
 
-<!-- 03 -->
+<!-- ================================================= -->
+<!-- 03 — OBSERVACIÓN -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen3">
-    <div class="logo">COORDENADA 02 / OBSERVACIÓN</div>
-    <h2>OBSERVACIÓN</h2>
+
+    <div class="logo">
+        COORDENADA 02 / OBSERVACIÓN
+    </div>
+
+    <h2>
+        OBSERVACIÓN
+    </h2>
 
     <p>
         Hay objetos que están demasiado lejos para verlos claramente.
@@ -378,41 +540,93 @@ input {
         Para descubrir algo nuevo primero hay que...
     </p>
 
-    <button class="option" onclick="observationAnswer(false)">A — MIRAR</button>
-    <button class="option" onclick="observationAnswer(false)">B — SABER</button>
-    <button class="option" onclick="observationAnswer(false)">C — VIAJAR</button>
+    <button
+        class="option"
+        onclick="observationAnswer(true)">
+        A — MIRAR
+    </button>
 
-    <div class="feedback" id="observationFeedback"></div>
+    <button
+        class="option"
+        onclick="observationAnswer(false)">
+        B — SABER
+    </button>
+
+    <button
+        class="option"
+        onclick="observationAnswer(false)">
+        C — VIAJAR
+    </button>
+
+    <div
+        class="feedback"
+        id="observationFeedback">
+    </div>
+
 </section>
 
 
-<!-- 04 -->
+<!-- ================================================= -->
+<!-- 04 — SENSOR -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen4">
-    <div class="logo">SENSOR ACTIVO</div>
-    <h2>PRUEBA DE OBSERVACIÓN</h2>
+
+    <div class="logo">
+        SENSOR ACTIVO / ANÁLISIS DE CAMPO
+    </div>
+
+    <h2>
+        PRUEBA DE OBSERVACIÓN
+    </h2>
 
     <p>
         Hay cuatro señales en el campo.
         Una de ellas está cambiando.
     </p>
 
-    <p><strong>Detectá la estrella que cambió.</strong></p>
+    <p>
+        <strong>
+            Detectá la estrella que cambió.
+        </strong>
+    </p>
 
     <div class="observation-field">
+
         <div class="target-star"></div>
-        <div class="target-star special" onclick="targetFound()"></div>
+
+        <div
+            class="target-star special"
+            onclick="targetFound()">
+        </div>
+
         <div class="target-star"></div>
+
         <div class="target-star"></div>
+
     </div>
 
-    <div class="feedback" id="targetFeedback"></div>
+    <div
+        class="feedback"
+        id="targetFeedback">
+    </div>
+
 </section>
 
 
-<!-- 05 -->
+<!-- ================================================= -->
+<!-- 05 — CURIOSIDAD -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen5">
-    <div class="logo">COORDENADA 03 / VARIABLE DESCONOCIDA</div>
-    <h2>CURIOSIDAD</h2>
+
+    <div class="logo">
+        COORDENADA 03 / VARIABLE DESCONOCIDA
+    </div>
+
+    <h2>
+        CURIOSIDAD
+    </h2>
 
     <p>
         Los mapas sirven para encontrar lugares conocidos.
@@ -426,63 +640,167 @@ input {
 
     <p>
         Hay una herramienta que todo explorador lleva consigo.
-        No pesa. No ocupa espacio. No necesita baterías.
+        No pesa.
+        No ocupa espacio.
+        No necesita baterías.
         Y cuanto más la utiliza, más crece.
     </p>
 
-    <p><strong>¿Qué es?</strong></p>
+    <p>
+        <strong>¿Qué es?</strong>
+    </p>
 
-    <input id="curiosityInput" placeholder="ESCRIBÍ TU RESPUESTA">
+    <input
+        id="curiosityInput"
+        placeholder="ESCRIBÍ TU RESPUESTA"
+    >
 
-    <button onclick="checkCuriosity()">[ IDENTIFICAR VARIABLE ]</button>
+    <button onclick="checkCuriosity()">
+        [ IDENTIFICAR VARIABLE ]
+    </button>
 
-    <div class="feedback" id="curiosityFeedback"></div>
+    <div
+        class="feedback"
+        id="curiosityFeedback">
+    </div>
+
 </section>
 
 
-<!-- 06 -->
+<!-- ================================================= -->
+<!-- 06 — ARCHIVO FEDE -->
+<!-- ================================================= -->
+
 <section class="screen" id="screen6">
-    <div class="logo">VARIABLE IDENTIFICADA</div>
 
-    <div class="constellation">✦ · ✦ · ✦</div>
+    <div class="logo">
+        VARIABLE IDENTIFICADA
+    </div>
 
-    <h2>CURIOSIDAD</h2>
+    <div class="constellation">
+        ✦ · ✦ · ✦
+    </div>
+
+    <h2>
+        CURIOSIDAD
+    </h2>
 
     <div class="success">
+
         ✓ OBSERVACIÓN<br>
         ✓ ORIGEN<br>
         ✓ CURIOSIDAD
+
+    </div>
+
+    <div class="easter">
+
+        ARCHIVO HISTÓRICO / REGISTRO PARCIAL
+        <br><br>
+
+        El sistema ha detectado un patrón particular
+        en el historial del explorador.
+        <br><br>
+
+        Durante una etapa anterior de su desarrollo,
+        el explorador dedicó una cantidad considerable
+        de tiempo a investigar criaturas que habitaron
+        la Tierra millones de años atrás.
+        <br><br>
+
+        Método utilizado:
+        <strong>observar evidencias, reconstruir hipótesis
+        y buscar respuestas.</strong>
+        <br><br>
+
+        Registro compatible con perfil científico.
+        <br>
+        Archivo conservado.
+
     </div>
 
     <p>
-        PROTOCOLO DE EXPLORACIÓN COMPLETADO
+        Quizás algunos exploradores comienzan
+        buscando huellas del pasado.
     </p>
 
-    <p><strong>UNA ÚLTIMA PREGUNTA</strong></p>
+    <p>
+        Otros terminan buscando señales
+        de mundos que todavía no conocemos.
+    </p>
 
-    <p>¿Estás preparado para continuar?</p>
+    <p>
+        La curiosidad es la misma.
+    </p>
 
-    <button onclick="unlock()">[ SÍ ]</button>
+    <p>
+        <strong>
+            PROTOCOLO DE EXPLORACIÓN COMPLETADO
+        </strong>
+    </p>
+
+    <p>
+        <strong>
+            UNA ÚLTIMA PREGUNTA
+        </strong>
+    </p>
+
+    <p>
+        ¿Estás preparado para continuar?
+    </p>
+
+    <button onclick="unlock()">
+        [ SÍ ]
+    </button>
+
 </section>
 
 
-<!-- 07 -->
-<section class="screen" id="screen7">
-    <div class="logo">ACCESSING...</div>
+<!-- ================================================= -->
+<!-- 07 — DESBLOQUEO -->
+<!-- ================================================= -->
 
-    <div class="progress">
-        <div class="progress-inner"></div>
+<section class="screen" id="screen7">
+
+    <div class="logo">
+        ACCESSING / PROTOCOLO 12
     </div>
 
-    <h2>ACCESO AUTORIZADO</h2>
+    <div class="progress">
 
-    <div class="system">EXPLORADOR CONFIRMADO</div>
-    <div class="system">EXPEDICIÓN 001</div>
-    <div class="system">PROTOCOLO ORIGEN</div>
+        <div class="progress-inner"></div>
+
+    </div>
+
+    <h2>
+        ACCESO AUTORIZADO
+    </h2>
+
+    <div class="system">
+        EXPLORADOR: FEDE
+    </div>
+
+    <div class="system">
+        EDAD: 12
+    </div>
+
+    <div class="system">
+        CLASIFICACIÓN: CONFIRMADA
+    </div>
+
+    <div class="system">
+        EXPEDICIÓN 001
+    </div>
+
+    <div class="system">
+        PROTOCOLO ORIGEN
+    </div>
 
     <br>
 
-    <h2>🔓 RECURSO DE AVENTURA DESBLOQUEADO</h2>
+    <h2>
+        🔓 RECURSO DE AVENTURA DESBLOQUEADO
+    </h2>
 
     <p>
         Algunos recursos no se entregan inmediatamente.
@@ -494,27 +812,90 @@ input {
         Su ubicación y naturaleza permanecen clasificadas.
     </p>
 
-    <button onclick="goTo(8)">[ VER REGISTRO DE MISIÓN ]</button>
+    <p class="highlight">
+        FEDE:
+        RECURSO AUTORIZADO PARA USO FUTURO.
+    </p>
+
+    <button onclick="goTo(8)">
+        [ VER REGISTRO DE MISIÓN ]
+    </button>
+
 </section>
 
 
-<!-- 08 -->
-<section class="screen" id="screen8">
-    <div class="logo">REGISTRO DE MISIÓN</div>
+<!-- ================================================= -->
+<!-- 08 — REGISTRO FINAL -->
+<!-- ================================================= -->
 
-    <h2>MISIÓN COMPLETADA</h2>
+<section class="screen" id="screen8">
+
+    <div class="logo">
+        REGISTRO DE MISIÓN / FEDE
+    </div>
+
+    <h2>
+        MISIÓN COMPLETADA
+    </h2>
 
     <div class="final">
-        <div class="system">IDENTIDAD: CONFIRMADA</div>
-        <div class="system">ORIGEN: TIERRA</div>
-        <div class="system">OBSERVACIÓN: APROBADA</div>
-        <div class="system">CURIOSIDAD: CONFIRMADA</div>
-        <div class="system">ACCESO: AUTORIZADO</div>
-        <div class="system">RECURSO: DESBLOQUEADO</div>
+
+        <div class="system">
+            IDENTIDAD: FEDE / CONFIRMADA
+        </div>
+
+        <div class="system">
+            EDAD: 12 / CONFIRMADA
+        </div>
+
+        <div class="system">
+            ORIGEN: TIERRA
+        </div>
+
+        <div class="system">
+            OBSERVACIÓN: APROBADA
+        </div>
+
+        <div class="system">
+            PRECISIÓN: DETECTADA
+        </div>
+
+        <div class="system">
+            CURIOSIDAD: CONFIRMADA
+        </div>
+
+        <div class="system">
+            ACCESO: AUTORIZADO
+        </div>
+
+        <div class="system">
+            RECURSO: DESBLOQUEADO
+        </div>
+
     </div>
 
     <p>
-        La exploración continúa.
+        Fede, esta fue solo la primera expedición.
+    </p>
+
+    <p>
+        Hace falta el mismo espíritu para estudiar
+        una huella de millones de años que para observar
+        una señal a millones de kilómetros:
+    </p>
+
+    <p>
+        <strong>
+            mirar con atención,
+            hacer preguntas
+            y no conformarse con la primera respuesta.
+        </strong>
+    </p>
+
+    <p>
+        Tu instrumento acaba de cambiar.
+        <br>
+        <strong>La curiosidad no.</strong>
     </p>
 
     <p>
@@ -529,7 +910,10 @@ input {
         ser descubierto.
     </p>
 
-    <div class="system">🔭 TRANSMISIÓN FINALIZADA</div>
+    <div class="system">
+        🔭 TRANSMISIÓN FINALIZADA
+    </div>
+
 </section>
 
 </div>
@@ -537,40 +921,65 @@ input {
 
 <script>
 
+/* ================================================= */
 /* ESTRELLAS */
+/* ================================================= */
+
 const stars = document.getElementById("stars");
 
 for (let i = 0; i < 100; i++) {
+
     const star = document.createElement("div");
+
     star.className = "star";
-    star.style.left = Math.random() * 100 + "%";
-    star.style.top = Math.random() * 100 + "%";
-    star.style.opacity = Math.random();
+
+    star.style.left =
+        Math.random() * 100 + "%";
+
+    star.style.top =
+        Math.random() * 100 + "%";
+
+    star.style.opacity =
+        Math.random();
+
     stars.appendChild(star);
 }
 
 
+/* ================================================= */
 /* CAMBIO DE PANTALLA */
+/* ================================================= */
+
 function goTo(number) {
 
-    document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.remove("active");
-    });
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
+            screen.classList.remove("active");
+        });
 
-    document.getElementById("screen" + number).classList.add("active");
+    document
+        .getElementById("screen" + number)
+        .classList.add("active");
+
+    window.scrollTo(0, 0);
 }
 
 
+/* ================================================= */
 /* COORDENADA ORIGEN */
+/* ================================================= */
+
 function checkOrigin() {
 
-    const answer = document
+    const answer =
+        document
         .getElementById("originInput")
         .value
         .trim()
         .toUpperCase();
 
-    const feedback = document.getElementById("originFeedback");
+    const feedback =
+        document.getElementById("originFeedback");
 
     if (
         answer === "TIERRA" ||
@@ -580,7 +989,8 @@ function checkOrigin() {
         feedback.innerHTML =
             "✓ COORDENADA CONFIRMADA<br><br>" +
             "ORIGEN: TIERRA<br>" +
-            "TODO EXPLORADOR DEBE SABER DESDE DÓNDE OBSERVA.";
+            "TODO EXPLORADOR DEBE SABER " +
+            "DESDE DÓNDE OBSERVA.";
 
         setTimeout(() => goTo(3), 2200);
 
@@ -593,46 +1003,75 @@ function checkOrigin() {
 }
 
 
+/* ================================================= */
 /* OBSERVACIÓN */
+/* ================================================= */
+
 function observationAnswer(correct) {
 
     const feedback =
-        document.getElementById("observationFeedback");
+        document.getElementById(
+            "observationFeedback"
+        );
 
-    feedback.innerHTML =
-        "✓ RESPUESTA ACEPTADA<br><br>" +
-        "Pero mirar no siempre significa ver.<br>" +
-        "La observación requiere atención.";
+    if (correct) {
 
-    setTimeout(() => goTo(4), 2200);
+        feedback.innerHTML =
+            "✓ RESPUESTA ACEPTADA<br><br>" +
+            "Pero mirar no siempre significa ver.<br>" +
+            "La observación requiere atención.";
+
+        setTimeout(() => goTo(4), 2200);
+
+    } else {
+
+        feedback.innerHTML =
+            "RESPUESTA INCORRECTA<br><br>" +
+            "El conocimiento puede ayudarte a interpretar " +
+            "lo que encontrás.<br><br>" +
+            "Pero antes hay que observar.";
+
+    }
 }
 
 
+/* ================================================= */
 /* ESTRELLA */
+/* ================================================= */
+
 function targetFound() {
 
     const feedback =
-        document.getElementById("targetFeedback");
+        document.getElementById(
+            "targetFeedback"
+        );
 
     feedback.innerHTML =
         "✓ OBJETIVO DETECTADO<br><br>" +
-        "CAPACIDAD DE OBSERVACIÓN: CONFIRMADA";
+        "CAPACIDAD DE OBSERVACIÓN: CONFIRMADA<br>" +
+        "PRECISIÓN DE ANÁLISIS: CONFIRMADA";
 
-    setTimeout(() => goTo(5), 2200);
+    setTimeout(() => goTo(5), 2400);
 }
 
 
+/* ================================================= */
 /* CURIOSIDAD */
+/* ================================================= */
+
 function checkCuriosity() {
 
-    const answer = document
+    const answer =
+        document
         .getElementById("curiosityInput")
         .value
         .trim()
         .toUpperCase();
 
     const feedback =
-        document.getElementById("curiosityFeedback");
+        document.getElementById(
+            "curiosityFeedback"
+        );
 
     if (
         answer === "CURIOSIDAD" ||
@@ -653,7 +1092,10 @@ function checkCuriosity() {
 }
 
 
+/* ================================================= */
 /* DESBLOQUEO */
+/* ================================================= */
+
 function unlock() {
 
     goTo(7);
@@ -662,6 +1104,7 @@ function unlock() {
        MÁS ADELANTE VAMOS A CONECTAR ACÁ
        EL AVISO SECRETO PARA EDU.
     */
+
 }
 
 </script>
