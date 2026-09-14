@@ -78,7 +78,7 @@ body::after{
   );
 }
 
-/* ---------- APP ---------- */
+#missionMusic{display:none}\n\n/* ---------- APP ---------- */
 
 #app{
   width:100%;
@@ -1327,6 +1327,10 @@ button:active{transform:translateY(0)}
 </head>
 
 <body>
+
+  <audio id="missionMusic" loop preload="auto">
+    <source src="audio/mission-music.mp3" type="audio/mpeg">
+  </audio>
 <div class="scanlines"></div>
 
 <main id="app">
@@ -1364,7 +1368,7 @@ button:active{transform:translateY(0)}
         PROTOCOLO: 001<br>
         ESTADO: ACTIVO
       </div>
-      <button class="primary" type="button" onclick="goTo(1)">[ RECIBIR TRANSMISIÓN ]</button>
+      <button class="primary" type="button" onclick="startMission()">[ RECIBIR TRANSMISIÓN ]</button>
     </div>
   </section>
 
@@ -1715,6 +1719,8 @@ function goTo(number){
   currentScreen = number;
   buildProgress();
 
+  missionAudioForScreen(number);
+
   window.scrollTo(0, 0);
 }
 
@@ -1759,6 +1765,7 @@ function observationAnswer(correct){
   const feedback = document.getElementById("observationFeedback");
 
   if(correct){
+    beep("success");
     feedback.className = "feedback success";
     feedback.innerHTML =
       "✓ RESPUESTA ACEPTADA<br>" +
@@ -1936,6 +1943,113 @@ async function finalizeMission(){
   await sendCompletionNotification(secretName);
 }
 
+
+/* ---------- AUDIO / AMBIENTE DE MISIÓN ---------- */
+let audioCtx = null;
+let missionMusic = null;
+let musicFadeTimer = null;
+let musicTargetVolume = 0.18;
+
+function initAudioSystem(){
+  if(!missionMusic) missionMusic = document.getElementById("missionMusic");
+
+  if(!audioCtx){
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(AC) audioCtx = new AC();
+  }
+
+  if(audioCtx && audioCtx.state === "suspended"){
+    audioCtx.resume().catch(()=>{});
+  }
+}
+
+function beep(type="confirm"){
+  if(!audioCtx) return;
+
+  const now = audioCtx.currentTime;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  const settings = {
+    confirm: {freq:880, end:1320, duration:.11, volume:.035},
+    success: {freq:660, end:990, duration:.18, volume:.045},
+    wrong:   {freq:220, end:150, duration:.16, volume:.028},
+    unlock:  {freq:520, end:1040, duration:.28, volume:.055}
+  }[type] || {freq:880, end:1320, duration:.11, volume:.035};
+
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(settings.freq, now);
+  osc.frequency.exponentialRampToValueAtTime(settings.end, now + settings.duration);
+
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(settings.volume, now + .015);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + settings.duration);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(now);
+  osc.stop(now + settings.duration + .02);
+}
+
+function fadeMusicTo(target, duration=1200){
+  if(!missionMusic) return;
+
+  musicTargetVolume = target;
+
+  if(musicFadeTimer) clearInterval(musicFadeTimer);
+
+  const start = missionMusic.volume;
+  const diff = target - start;
+  const steps = Math.max(1, Math.round(duration / 40));
+  let step = 0;
+
+  musicFadeTimer = setInterval(()=>{
+    step++;
+    const p = Math.min(1, step / steps);
+    missionMusic.volume = Math.max(0, Math.min(1, start + diff * p));
+
+    if(p >= 1){
+      clearInterval(musicFadeTimer);
+      musicFadeTimer = null;
+    }
+  }, 40);
+}
+
+function startMission(){
+  initAudioSystem();
+
+  if(missionMusic){
+    missionMusic.volume = 0;
+    const playPromise = missionMusic.play();
+
+    if(playPromise && typeof playPromise.then === "function"){
+      playPromise.then(()=>{
+        fadeMusicTo(.18, 1800);
+      }).catch(()=>{
+        // El navegador puede bloquear el audio; la misión sigue funcionando.
+      });
+    }else{
+      fadeMusicTo(.18, 1800);
+    }
+  }
+
+  beep("confirm");
+  goTo(1);
+}
+
+function missionAudioForScreen(number){
+  if(!missionMusic) return;
+
+  if(number === 7){
+    beep("unlock");
+    fadeMusicTo(.28, 1800);
+  }
+
+  if(number === 8){
+    fadeMusicTo(.36, 2200);
+  }
+}
+
 /* ---------- START ---------- */
 
 buildProgress();
@@ -2014,10 +2128,12 @@ function answerPaleo(correct){
   if (!feedback) return;
 
   if (!correct) {
+    beep("wrong");
     feedback.textContent = '✕ REGISTRO INCORRECTO / VOLVÉ A OBSERVAR';
     return;
   }
 
+  beep("success");
   buttons.forEach(function(b){ b.disabled = true; });
   var selected = Array.from(buttons).find(function(b){ return b.textContent.trim() === 'PALEONTOLOGÍA'; });
   if (selected) selected.classList.add('correct');
