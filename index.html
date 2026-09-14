@@ -1328,9 +1328,23 @@ button:active{transform:translateY(0)}
 
 <body>
 
+  <!-- AUDIO SYSTEM V5.0 — música + SFX de misión -->
   <audio id="missionMusic" loop preload="auto">
     <source src="audio/mission-music.mp3" type="audio/mpeg">
   </audio>
+  <audio id="archiveMusic" loop preload="auto" crossorigin="anonymous">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-spirit-in-the-woods-139.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="nightSkyMusic" loop preload="auto" crossorigin="anonymous">
+    <source src="https://assets.mixkit.co/music/preview/mixkit-staring-at-the-night-sky-168.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="sfxClick" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/900/900-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxConfirm" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/914/914-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxHint" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/911/911-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxSweep" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/3114/3114-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxUnlock" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2859/2859-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxPower" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2602/2602-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="sfxSpaceIntro" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2523/2523-preview.mp3" type="audio/mpeg"></audio>
 <div class="scanlines"></div>
 
 <main id="app">
@@ -1765,6 +1779,7 @@ function observationAnswer(correct){
   const feedback = document.getElementById("observationFeedback");
 
   if(correct){
+    playSfx("sfxConfirm",.18);
     beep("success");
     feedback.className = "feedback success";
     feedback.innerHTML =
@@ -1947,106 +1962,166 @@ async function finalizeMission(){
 /* ---------- AUDIO / AMBIENTE DE MISIÓN ---------- */
 let audioCtx = null;
 let missionMusic = null;
+let archiveMusic = null;
+let nightSkyMusic = null;
 let musicFadeTimer = null;
+let activeMusic = null;
 let musicTargetVolume = 0.18;
 
 function initAudioSystem(){
-  if(!missionMusic) missionMusic = document.getElementById("missionMusic");
+  missionMusic = missionMusic || document.getElementById("missionMusic");
+  archiveMusic = archiveMusic || document.getElementById("archiveMusic");
+  nightSkyMusic = nightSkyMusic || document.getElementById("nightSkyMusic");
 
   if(!audioCtx){
     const AC = window.AudioContext || window.webkitAudioContext;
     if(AC) audioCtx = new AC();
   }
 
-  if(audioCtx && audioCtx.state === "suspended"){
-    audioCtx.resume().catch(()=>{});
+  if(audioCtx && audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
+}
+
+function playSfx(id, volume=.24){
+  const el = document.getElementById(id);
+  if(!el) return;
+  try{
+    el.pause();
+    el.currentTime = 0;
+    el.volume = Math.max(0, Math.min(1, volume));
+    const p = el.play();
+    if(p && typeof p.catch === "function") p.catch(()=>{});
+  }catch(e){}
+}
+
+function stopMusic(el, duration=900){
+  if(!el) return;
+  const start = el.volume;
+  const steps = Math.max(1, Math.round(duration/40));
+  let step = 0;
+  const timer = setInterval(()=>{
+    step++;
+    const p = Math.min(1, step/steps);
+    el.volume = Math.max(0, start*(1-p));
+    if(p>=1){
+      clearInterval(timer);
+      el.pause();
+      el.currentTime = 0;
+      el.volume = 0;
+    }
+  },40);
+}
+
+function fadeInMusic(el, target=.18, duration=1400){
+  if(!el) return;
+  if(musicFadeTimer) clearInterval(musicFadeTimer);
+  musicFadeTimer = null;
+  el.volume = 0;
+  const p = el.play();
+  const begin = ()=>{
+    const steps = Math.max(1, Math.round(duration/40));
+    let step = 0;
+    musicFadeTimer = setInterval(()=>{
+      step++;
+      const progress = Math.min(1, step/steps);
+      el.volume = Math.max(0, Math.min(1, target*progress));
+      if(progress>=1){ clearInterval(musicFadeTimer); musicFadeTimer=null; }
+    },40);
+  };
+  if(p && typeof p.then === "function") p.then(begin).catch(()=>{}); else begin();
+}
+
+function switchMusic(next, target=.18, duration=1400){
+  if(!next) return;
+  if(activeMusic === next){
+    fadeMusicTo(target,duration);
+    return;
   }
+
+  const previous = activeMusic;
+  activeMusic = next;
+
+  if(previous && previous !== next){
+    stopMusic(previous, Math.min(800,duration));
+  }
+
+  fadeInMusic(next,target,duration);
+}
+
+function fadeMusicTo(target, duration=1200){
+  if(!activeMusic) return;
+  musicTargetVolume = target;
+  if(musicFadeTimer) clearInterval(musicFadeTimer);
+  const start = activeMusic.volume;
+  const diff = target-start;
+  const steps = Math.max(1,Math.round(duration/40));
+  let step=0;
+  musicFadeTimer=setInterval(()=>{
+    step++;
+    const p=Math.min(1,step/steps);
+    activeMusic.volume=Math.max(0,Math.min(1,start+diff*p));
+    if(p>=1){clearInterval(musicFadeTimer);musicFadeTimer=null;}
+  },40);
 }
 
 function beep(type="confirm"){
   if(!audioCtx) return;
-
-  const now = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-
-  const settings = {
-    confirm: {freq:880, end:1320, duration:.11, volume:.035},
-    success: {freq:660, end:990, duration:.18, volume:.045},
-    wrong:   {freq:220, end:150, duration:.16, volume:.028},
-    unlock:  {freq:520, end:1040, duration:.28, volume:.055}
-  }[type] || {freq:880, end:1320, duration:.11, volume:.035};
-
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(settings.freq, now);
-  osc.frequency.exponentialRampToValueAtTime(settings.end, now + settings.duration);
-
-  gain.gain.setValueAtTime(0.0001, now);
-  gain.gain.exponentialRampToValueAtTime(settings.volume, now + .015);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + settings.duration);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start(now);
-  osc.stop(now + settings.duration + .02);
-}
-
-function fadeMusicTo(target, duration=1200){
-  if(!missionMusic) return;
-
-  musicTargetVolume = target;
-
-  if(musicFadeTimer) clearInterval(musicFadeTimer);
-
-  const start = missionMusic.volume;
-  const diff = target - start;
-  const steps = Math.max(1, Math.round(duration / 40));
-  let step = 0;
-
-  musicFadeTimer = setInterval(()=>{
-    step++;
-    const p = Math.min(1, step / steps);
-    missionMusic.volume = Math.max(0, Math.min(1, start + diff * p));
-
-    if(p >= 1){
-      clearInterval(musicFadeTimer);
-      musicFadeTimer = null;
-    }
-  }, 40);
+  const now=audioCtx.currentTime;
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  const settings={
+    confirm:{freq:880,end:1320,duration:.11,volume:.025},
+    success:{freq:660,end:990,duration:.18,volume:.035},
+    wrong:{freq:220,end:150,duration:.16,volume:.022},
+    unlock:{freq:520,end:1040,duration:.28,volume:.045}
+  }[type] || {freq:880,end:1320,duration:.11,volume:.025};
+  osc.type="sine";
+  osc.frequency.setValueAtTime(settings.freq,now);
+  osc.frequency.exponentialRampToValueAtTime(settings.end,now+settings.duration);
+  gain.gain.setValueAtTime(.0001,now);
+  gain.gain.exponentialRampToValueAtTime(settings.volume,now+.015);
+  gain.gain.exponentialRampToValueAtTime(.0001,now+settings.duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(now); osc.stop(now+settings.duration+.02);
 }
 
 function startMission(){
   initAudioSystem();
-
-  if(missionMusic){
-    missionMusic.volume = 0;
-    const playPromise = missionMusic.play();
-
-    if(playPromise && typeof playPromise.then === "function"){
-      playPromise.then(()=>{
-        fadeMusicTo(.18, 1800);
-      }).catch(()=>{
-        // El navegador puede bloquear el audio; la misión sigue funcionando.
-      });
-    }else{
-      fadeMusicTo(.18, 1800);
-    }
-  }
-
+  switchMusic(missionMusic,.16,1800);
+  playSfx("sfxSpaceIntro",.18);
   beep("confirm");
   goTo(1);
 }
 
 function missionAudioForScreen(number){
-  if(!missionMusic) return;
+  initAudioSystem();
+
+  // Navegación general: pequeño sonido de interfaz, sin saturar.
+  if(number !== 0 && number !== 7 && number !== 8) playSfx("sfxSweep",.12);
+
+  if(number === 1){
+    switchMusic(missionMusic,.16,1000);
+  }
+
+  if(number === 2 || number === 3 || number === 4 || number === 5){
+    switchMusic(missionMusic, number===3 ? .13 : .11,900);
+  }
+
+  if(number === 6){
+    switchMusic(archiveMusic,.10,1800);
+    playSfx("sfxHint",.14);
+  }
 
   if(number === 7){
+    switchMusic(missionMusic,.25,1800);
+    playSfx("sfxUnlock",.25);
+    setTimeout(()=>playSfx("sfxPower",.22),260);
     beep("unlock");
-    fadeMusicTo(.28, 1800);
   }
 
   if(number === 8){
-    fadeMusicTo(.36, 2200);
+    switchMusic(nightSkyMusic,.17,2200);
+    playSfx("sfxSpaceIntro",.20);
+    setTimeout(()=>playSfx("sfxConfirm",.22),650);
   }
 }
 
@@ -2128,12 +2203,14 @@ function answerPaleo(correct){
   if (!feedback) return;
 
   if (!correct) {
+    playSfx("sfxHint",.10);
     beep("wrong");
     feedback.textContent = '✕ REGISTRO INCORRECTO / VOLVÉ A OBSERVAR';
     return;
   }
 
-  beep("success");
+  playSfx("sfxConfirm",.18);
+    beep("success");
   buttons.forEach(function(b){ b.disabled = true; });
   var selected = Array.from(buttons).find(function(b){ return b.textContent.trim() === 'PALEONTOLOGÍA'; });
   if (selected) selected.classList.add('correct');
