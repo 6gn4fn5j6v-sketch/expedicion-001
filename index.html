@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+<meta name="audio-version" content="V6.0 — naturaleza tecnológica">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#05070b">
@@ -1328,23 +1329,12 @@ button:active{transform:translateY(0)}
 
 <body>
 
-  <!-- AUDIO SYSTEM V5.0 — música + SFX de misión -->
+  <!-- AUDIO SYSTEM V6.0 — naturaleza tecnológica / paisaje sonoro -->
   <audio id="missionMusic" loop preload="auto">
-    <source src="audio/mission-music.mp3" type="audio/mpeg">
+    <source src="audio/Vastness.mp3" type="audio/mpeg">
   </audio>
-  <audio id="archiveMusic" loop preload="auto" crossorigin="anonymous">
-    <source src="https://assets.mixkit.co/music/preview/mixkit-spirit-in-the-woods-139.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="nightSkyMusic" loop preload="auto" crossorigin="anonymous">
-    <source src="https://assets.mixkit.co/music/preview/mixkit-staring-at-the-night-sky-168.mp3" type="audio/mpeg">
-  </audio>
-  <audio id="sfxClick" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/900/900-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxConfirm" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/914/914-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxHint" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/911/911-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxSweep" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/3114/3114-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxUnlock" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2859/2859-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxPower" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2602/2602-preview.mp3" type="audio/mpeg"></audio>
-  <audio id="sfxSpaceIntro" preload="auto"><source src="https://assets.mixkit.co/active_storage/sfx/2523/2523-preview.mp3" type="audio/mpeg"></audio>
+  <audio id="archiveMusic" loop preload="auto"><source src="audio/Forest Mist Whispers.mp3" type="audio/mpeg"></audio>
+  <audio id="nightSkyMusic" loop preload="auto"><source src="audio/Staring at the Night Sky.mp3" type="audio/mpeg"></source></audio>
 <div class="scanlines"></div>
 
 <main id="app">
@@ -1779,7 +1769,7 @@ function observationAnswer(correct){
   const feedback = document.getElementById("observationFeedback");
 
   if(correct){
-    playSfx("sfxConfirm",.18);
+    playSfx("sfxConfirm",.08);
     beep("success");
     feedback.className = "feedback success";
     feedback.innerHTML =
@@ -1959,7 +1949,7 @@ async function finalizeMission(){
 }
 
 
-/* ---------- AUDIO / AMBIENTE DE MISIÓN ---------- */
+/* ---------- AUDIO / PAISAJE SONORO — NATURALEZA TECNOLÓGICA ---------- */
 let audioCtx = null;
 let missionMusic = null;
 let archiveMusic = null;
@@ -1982,15 +1972,37 @@ function initAudioSystem(){
 }
 
 function playSfx(id, volume=.24){
-  const el = document.getElementById(id);
-  if(!el) return;
-  try{
-    el.pause();
-    el.currentTime = 0;
-    el.volume = Math.max(0, Math.min(1, volume));
-    const p = el.play();
-    if(p && typeof p.catch === "function") p.catch(()=>{});
-  }catch(e){}
+  // V6: sonidos generativos, profundos y orgánicos. Sin bleeps electrónicos.
+  if(!audioCtx) return;
+  const now=audioCtx.currentTime;
+  const master=audioCtx.createGain();
+  master.gain.setValueAtTime(.0001,now);
+  master.gain.exponentialRampToValueAtTime(Math.max(.0001,volume),now+.025);
+  master.gain.exponentialRampToValueAtTime(.0001,now+.7);
+  master.connect(audioCtx.destination);
+
+  const type = String(id||'').toLowerCase();
+  if(type.includes('confirm')){
+    const o=audioCtx.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(196,now); o.frequency.exponentialRampToValueAtTime(261.6,now+.34);
+    o.connect(master); o.start(now); o.stop(now+.42);
+  } else if(type.includes('hint')){
+    const o=audioCtx.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(110,now); o.frequency.exponentialRampToValueAtTime(82,now+.35);
+    o.connect(master); o.start(now); o.stop(now+.42);
+  } else if(type.includes('sweep')){
+    const o=audioCtx.createOscillator(); o.type='triangle';
+    o.frequency.setValueAtTime(75,now); o.frequency.exponentialRampToValueAtTime(145,now+.55);
+    o.connect(master); o.start(now); o.stop(now+.62);
+  } else if(type.includes('unlock') || type.includes('power')){
+    const o=audioCtx.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(55,now); o.frequency.exponentialRampToValueAtTime(110,now+.55);
+    o.connect(master); o.start(now); o.stop(now+.7);
+  } else {
+    const o=audioCtx.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(130,now); o.frequency.exponentialRampToValueAtTime(92,now+.28);
+    o.connect(master); o.start(now); o.stop(now+.36);
+  }
 }
 
 function stopMusic(el, duration=900){
@@ -2069,25 +2081,25 @@ function beep(type="confirm"){
   const osc=audioCtx.createOscillator();
   const gain=audioCtx.createGain();
   const settings={
-    confirm:{freq:880,end:1320,duration:.11,volume:.025},
-    success:{freq:660,end:990,duration:.18,volume:.035},
-    wrong:{freq:220,end:150,duration:.16,volume:.022},
-    unlock:{freq:520,end:1040,duration:.28,volume:.045}
-  }[type] || {freq:880,end:1320,duration:.11,volume:.025};
+    confirm:{freq:196,end:261.6,duration:.20,volume:.018},
+    success:{freq:174,end:261.6,duration:.34,volume:.026},
+    wrong:{freq:92,end:65,duration:.26,volume:.018},
+    unlock:{freq:82,end:164,duration:.60,volume:.035}
+  }[type] || {freq:196,end:261.6,duration:.20,volume:.018};
   osc.type="sine";
   osc.frequency.setValueAtTime(settings.freq,now);
   osc.frequency.exponentialRampToValueAtTime(settings.end,now+settings.duration);
   gain.gain.setValueAtTime(.0001,now);
-  gain.gain.exponentialRampToValueAtTime(settings.volume,now+.015);
+  gain.gain.exponentialRampToValueAtTime(settings.volume,now+.035);
   gain.gain.exponentialRampToValueAtTime(.0001,now+settings.duration);
   osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(now); osc.stop(now+settings.duration+.02);
+  osc.start(now); osc.stop(now+settings.duration+.03);
 }
 
 function startMission(){
   initAudioSystem();
-  switchMusic(missionMusic,.16,1800);
-  playSfx("sfxSpaceIntro",.18);
+  switchMusic(missionMusic,.12,2200);
+  playSfx("sfxSweep",.08);
   beep("confirm");
   goTo(1);
 }
@@ -2096,32 +2108,32 @@ function missionAudioForScreen(number){
   initAudioSystem();
 
   // Navegación general: pequeño sonido de interfaz, sin saturar.
-  if(number !== 0 && number !== 7 && number !== 8) playSfx("sfxSweep",.12);
+  if(number !== 0 && number !== 7 && number !== 8) playSfx("sfxSweep",.045);
 
   if(number === 1){
-    switchMusic(missionMusic,.16,1000);
+    switchMusic(missionMusic,.12,1400);
   }
 
   if(number === 2 || number === 3 || number === 4 || number === 5){
-    switchMusic(missionMusic, number===3 ? .13 : .11,900);
+    switchMusic(missionMusic, number===3 ? .09 : .08,1200);
   }
 
   if(number === 6){
-    switchMusic(archiveMusic,.10,1800);
-    playSfx("sfxHint",.14);
+    switchMusic(archiveMusic,.075,2200);
+    playSfx("sfxHint",.06);
   }
 
   if(number === 7){
-    switchMusic(missionMusic,.25,1800);
-    playSfx("sfxUnlock",.25);
-    setTimeout(()=>playSfx("sfxPower",.22),260);
+    switchMusic(missionMusic,.22,2200);
+    playSfx("sfxUnlock",.16);
+    setTimeout(()=>playSfx("sfxPower",.13),420);
     beep("unlock");
   }
 
   if(number === 8){
-    switchMusic(nightSkyMusic,.17,2200);
-    playSfx("sfxSpaceIntro",.20);
-    setTimeout(()=>playSfx("sfxConfirm",.22),650);
+    switchMusic(nightSkyMusic,.11,2800);
+    playSfx("sfxSweep",.07);
+    setTimeout(()=>playSfx("sfxConfirm",.09),850);
   }
 }
 
@@ -2203,13 +2215,13 @@ function answerPaleo(correct){
   if (!feedback) return;
 
   if (!correct) {
-    playSfx("sfxHint",.10);
+    playSfx("sfxHint",.055);
     beep("wrong");
     feedback.textContent = '✕ REGISTRO INCORRECTO / VOLVÉ A OBSERVAR';
     return;
   }
 
-  playSfx("sfxConfirm",.18);
+  playSfx("sfxConfirm",.08);
     beep("success");
   buttons.forEach(function(b){ b.disabled = true; });
   var selected = Array.from(buttons).find(function(b){ return b.textContent.trim() === 'PALEONTOLOGÍA'; });
